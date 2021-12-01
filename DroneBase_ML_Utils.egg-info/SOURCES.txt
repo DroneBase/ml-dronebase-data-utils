@@ -1,7 +1,0 @@
-README.md
-setup.py
-DroneBase_ML_Utils.egg-info/PKG-INFO
-DroneBase_ML_Utils.egg-info/SOURCES.txt
-DroneBase_ML_Utils.egg-info/dependency_links.txt
-DroneBase_ML_Utils.egg-info/requires.txt
-DroneBase_ML_Utils.egg-info/top_level.txt
