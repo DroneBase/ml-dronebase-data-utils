@@ -1,6 +1,7 @@
 import json
 import os
 import boto3
+from botocore.exceptions import ClientError
 
 
 def is_json(myjson):
@@ -39,7 +40,7 @@ def upload_dir(local_directory, bucket_name, prefix):
 
             try:
                 client.head_object(Bucket=bucket_name, Key=s3_path)
-            except ValueError:
+            except ClientError:
                 client.upload_file(local_path, bucket_name, s3_path)
 
 
