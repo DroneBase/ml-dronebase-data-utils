@@ -1,6 +1,7 @@
 import json
 import os
 import boto3
+from tqdm import tqdm
 from botocore.exceptions import ClientError
 
 
@@ -64,7 +65,9 @@ def download_s3_folder(bucket_name, prefix, local_dir=None):
     """
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket_name)
-    for obj in bucket.objects.filter(Prefix=prefix):
+    objects = bucket.objects.filter(Prefix=prefix)
+    num_objects = sum(1 for _ in objects.all())
+    for i, obj in enumerate(tqdm(objects, total=num_objects)):
         target = obj.key if local_dir is None \
             else os.path.join(local_dir, os.path.relpath(obj.key, prefix))
         if not os.path.exists(os.path.dirname(target)):
