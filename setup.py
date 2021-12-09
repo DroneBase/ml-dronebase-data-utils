@@ -13,6 +13,6 @@ setup(
         "boto3==1.19.2",
         "tqdm==4.62.3"
     ],
-    packages=find_namespace_packages(where="ml_dronebase_utils"),
+    # packages=find_namespace_packages(where="ml_dronebase_utils"),
     python_requires=">=3.7",
 )
