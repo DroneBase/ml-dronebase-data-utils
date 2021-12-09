@@ -10,7 +10,8 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/DroneBase/dronebase-ml-utils",
     install_requires=[
-        "boto3==1.19.2"
+        "boto3==1.19.2",
+        "tqdm==4.62.3"
     ],
     packages=find_namespace_packages(where="dronebase_ml_utils"),
     python_requires=">=3.7",
