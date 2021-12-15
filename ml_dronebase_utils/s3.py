@@ -1,14 +1,18 @@
 import json
 import os
+from typing import Optional
+
 import boto3
-from tqdm import tqdm
 from botocore.exceptions import ClientError
+from tqdm import tqdm
 
 
-def is_json(myjson):
-    """Checks if the string is a json file
+def is_json(myjson: str) -> bool:
+    """Checks if the string is a json file.
+
     Args:
         myjson (str): Filename or path to potential json file.
+
     Returns:
         bool: Whether myjson was a json file.
     """
@@ -20,14 +24,15 @@ def is_json(myjson):
     return True
 
 
-def upload_dir(local_directory, bucket_name, prefix):
-    """Upload data from a local directory to an S3 bucket
+def upload_dir(local_directory: str, bucket_name: str, prefix: str) -> None:
+    """Upload data from a local directory to an S3 bucket.
+
     Args:
         local_directory (str): Local directory to upload from.
         bucket_name (str): S3 bucket name.
         prefix ([type]): Relative path from bucket to save data.
     """
-    client = boto3.client('s3')
+    client = boto3.client("s3")
 
     # enumerate local files recursively
     for root, dirs, files in os.walk(local_directory):
@@ -45,33 +50,40 @@ def upload_dir(local_directory, bucket_name, prefix):
                 client.upload_file(local_path, bucket_name, s3_path)
 
 
-def download_s3_file(bucket_name, prefix, local_path):
+def download_s3_file(bucket_name: str, prefix: str, local_path: str) -> None:
     """Download file from S3 bucket to local directory.
+
     Args:
         bucket_name (str): S3 bucket name.
         prefix ([type]): Relative path from bucket to requested file.
         local_path ([type]): Local directory to store file.
     """
-    s3 = boto3.client('s3')
+    s3 = boto3.client("s3")
     s3.download_file(bucket_name, prefix, local_path)
 
 
-def download_s3_folder(bucket_name, prefix, local_dir=None):
-    """Download the contents of a folder directory
+def download_s3_folder(
+    bucket_name: str, prefix: str, local_directory: Optional[str] = None
+) -> None:
+    """Download the contents of a folder directory.
+
     Args:
         bucket_name (str): S3 bucket name.
         prefix (str): Relative path from bucket to requested files.
-        local_dir (str, optional): Local directory to store files in.
+        local_directory (str, optional): Local directory to store files in.
     """
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource("s3")
     bucket = s3.Bucket(bucket_name)
     objects = bucket.objects.filter(Prefix=prefix)
     num_objects = sum(1 for _ in objects.all())
     for i, obj in enumerate(tqdm(objects, total=num_objects)):
-        target = obj.key if local_dir is None \
-            else os.path.join(local_dir, os.path.relpath(obj.key, prefix))
+        target = (
+            obj.key
+            if local_directory is None
+            else os.path.join(local_directory, os.path.relpath(obj.key, prefix))
+        )
         if not os.path.exists(os.path.dirname(target)):
             os.makedirs(os.path.dirname(target))
-        if obj.key[-1] == '/':
+        if obj.key[-1] == "/":
             continue
         bucket.download_file(obj.key, target)
