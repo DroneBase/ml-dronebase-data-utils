@@ -66,7 +66,5 @@ class PascalVOCWriter:
 
     def save(self, annotation_path: str) -> None:
         with open(annotation_path, "w") as file:
-            content = self.annotation_template.render(
-                **self.template_parameters
-            )
+            content = self.annotation_template.render(**self.template_parameters)
             file.write(content)
