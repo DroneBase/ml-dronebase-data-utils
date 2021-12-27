@@ -26,7 +26,6 @@ class PascalVOCWriter:
             file_path = path
         else:
             file_path = abspath
-
         self.template_parameters = {
             "path": file_path,
             "filename": os.path.basename(abspath),
@@ -46,74 +45,12 @@ class PascalVOCWriter:
         ymin: int,
         xmax: int,
         ymax: int,
+        angle: str = "Unspecified",
         pose: str = "Unspecified",
         truncated: int = 0,
         difficult: int = 0,
     ) -> None:
-        self.template_parameters["objects"].append(  # type: ignore[attr-defined]
-            {
-                "name": name,
-                "xmin": xmin,
-                "ymin": ymin,
-                "xmax": xmax,
-                "ymax": ymax,
-                "pose": pose,
-                "truncated": truncated,
-                "difficult": difficult,
-            }
-        )
-
-    def save(self, annotation_path: str) -> None:
-        with open(annotation_path, "w") as file:
-            content = self.annotation_template.render(**self.template_parameters)
-            file.write(content)
-
-
-class RotatedWriter:
-    def __init__(
-        self,
-        path: str,
-        width: int,
-        height: int,
-        depth: int = 3,
-        database: str = "Unknown",
-        segmented: int = 0,
-    ) -> None:
-        environment = Environment(
-            loader=PackageLoader("ml_dronebase_utils", "templates"),
-            keep_trailing_newline=True,
-        )
-        self.annotation_template = environment.get_template("rotated_annotation.xml")
-        abspath = os.path.abspath(path)
-        if "s3" in path:
-            file_path = path
-        else:
-            file_path = abspath
-        self.template_parameters = {
-            "path": file_path,
-            "filename": os.path.basename(abspath),
-            "folder": os.path.basename(os.path.dirname(abspath)),
-            "width": width,
-            "height": height,
-            "depth": depth,
-            "database": database,
-            "segmented": segmented,
-            "objects": [],
-        }
-
-    def addObject(
-        self,
-        name: str,
-        xmin: int,
-        ymin: int,
-        xmax: int,
-        ymax: int,
-        angle: int,
-        pose: str = "Unspecified",
-        truncated: int = 0,
-        difficult: int = 0,
-    ) -> None:
-        self.template_parameters["objects"].append(  # type: ignore[attr-defined]
+        self.template_parameters["objects"].append(
             {
                 "name": name,
                 "xmin": xmin,
@@ -129,5 +66,7 @@ class RotatedWriter:
 
     def save(self, annotation_path: str) -> None:
         with open(annotation_path, "w") as file:
-            content = self.annotation_template.render(**self.template_parameters)
+            content = self.annotation_template.render(
+                **self.template_parameters
+            )
             file.write(content)

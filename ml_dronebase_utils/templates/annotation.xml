@@ -21,6 +21,7 @@
             <ymin>{{ object.ymin }}</ymin>
             <xmax>{{ object.xmax }}</xmax>
             <ymax>{{ object.ymax }}</ymax>
+            <angle>{{ object.angle }}</angle>
         </bndbox>
     </object>{% endfor %}
 </annotation>
