@@ -7,20 +7,20 @@ on:
     branches:
     - master
 jobs:
-  black:
-    name: black
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone repo
-      uses: actions/checkout@v2
-    - name: Set up python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Install pip dependencies
-      run: pip install .
-    - name: Run black checks
-      run: black . --check --diff
+  # black:
+  #   name: black
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Clone repo
+  #     uses: actions/checkout@v2
+  #   - name: Set up python
+  #     uses: actions/setup-python@v2
+  #     with:
+  #       python-version: 3.9
+  #   - name: Install pip dependencies
+  #     run: pip install .
+  #   - name: Run black checks
+  #     run: black . --check --diff
   flake8:
     name: flake8
     runs-on: ubuntu-latest
@@ -35,17 +35,17 @@ jobs:
       run: pip install .
     - name: Run flake8 checks
       run: flake8
-  isort:
-    name: isort
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone repo
-      uses: actions/checkout@v2
-    - name: Set up python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Install pip dependencies
-      run: pip install .
-    - name: Run isort checks
-      run: isort . --check --diff
+  # isort:
+  #   name: isort
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Clone repo
+  #     uses: actions/checkout@v2
+  #   - name: Set up python
+  #     uses: actions/setup-python@v2
+  #     with:
+  #       python-version: 3.9
+  #   - name: Install pip dependencies
+  #     run: pip install .
+  #   - name: Run isort checks
+  #     run: isort . --check --diff
