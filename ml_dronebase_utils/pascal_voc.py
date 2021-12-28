@@ -17,13 +17,17 @@ class PascalVOCWriter:
         segmented: int = 0,
     ) -> None:
         environment = Environment(
-            loader=PackageLoader("pascal_voc_writer", "templates"),
+            loader=PackageLoader("ml_dronebase_utils", "templates"),
             keep_trailing_newline=True,
         )
         self.annotation_template = environment.get_template("annotation.xml")
         abspath = os.path.abspath(path)
+        if "s3" in path:
+            file_path = path
+        else:
+            file_path = abspath
         self.template_parameters = {
-            "path": abspath,
+            "path": file_path,
             "filename": os.path.basename(abspath),
             "folder": os.path.basename(os.path.dirname(abspath)),
             "width": width,
@@ -41,17 +45,19 @@ class PascalVOCWriter:
         ymin: int,
         xmax: int,
         ymax: int,
+        angle: str = "Unspecified",
         pose: str = "Unspecified",
         truncated: int = 0,
         difficult: int = 0,
     ) -> None:
-        self.template_parameters["objects"].append(  # type: ignore[attr-defined]
+        self.template_parameters["objects"].append(
             {
                 "name": name,
                 "xmin": xmin,
                 "ymin": ymin,
                 "xmax": xmax,
                 "ymax": ymax,
+                "angle": angle,
                 "pose": pose,
                 "truncated": truncated,
                 "difficult": difficult,
