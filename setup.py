@@ -5,7 +5,7 @@
 from codecs import open
 from os import path
 
-import setuptools
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -13,9 +13,9 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 if __name__ == "__main__":
-    setuptools.setup(
+    setup(
         name="ml-dronebase-utils",
-        version="0.3",
+        version="0.4",
         description="A collection of commonly functions used by DroneBase ML Engineers",
         long_description=long_description,
         url="https://github.com/DroneBase/ml-dronebase-utils",
