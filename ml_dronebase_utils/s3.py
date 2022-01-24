@@ -24,7 +24,9 @@ def is_json(myjson: str) -> bool:
     return True
 
 
-def upload_dir(local_directory: str, bucket_name: str, prefix: str, exist_ok: bool = True) -> None:
+def upload_dir(
+    local_directory: str, bucket_name: str, prefix: str, exist_ok: bool = True
+) -> None:
     """Upload data from a local directory to an S3 bucket.
 
     Args:
