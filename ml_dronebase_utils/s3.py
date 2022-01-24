@@ -50,20 +50,34 @@ def upload_dir(local_directory: str, bucket_name: str, prefix: str) -> None:
                 client.upload_file(local_path, bucket_name, s3_path)
 
 
-def download_s3_file(bucket_name: str, prefix: str, local_path: str) -> None:
+def download_s3_file(
+    bucket_name: str, prefix: str, local_path: str, size_limit: Optional[int] = None
+) -> None:
     """Download file from S3 bucket to local directory.
 
     Args:
         bucket_name (str): S3 bucket name.
-        prefix ([type]): Relative path from bucket to requested file.
-        local_path ([type]): Local directory to store file.
+        prefix (str): Relative path from bucket to requested file.
+        local_path (str): Local directory to store file.
+        size_limit (int, optional): Limits the file size accepted to size_limit bytes. Default None.
     """
     s3 = boto3.client("s3")
+    if size_limit is not None:
+        response = s3.head_object(Bucket=bucket_name, Key=prefix)
+        file_size = int(response["ContentLength"])
+        if file_size > size_limit:
+            raise ValueError(
+                "image size {} exceeds size_limit {}".format(file_size, size_limit)
+            )
+
     s3.download_file(bucket_name, prefix, local_path)
 
 
 def download_s3_folder(
-    bucket_name: str, prefix: str, local_directory: Optional[str] = None
+    bucket_name: str,
+    prefix: str,
+    local_directory: Optional[str] = None,
+    size_limit: Optional[int] = None,
 ) -> None:
     """Download the contents of a folder directory.
 
@@ -71,6 +85,7 @@ def download_s3_folder(
         bucket_name (str): S3 bucket name.
         prefix (str): Relative path from bucket to requested files.
         local_directory (str, optional): Local directory to store files in.
+        size_limit (int, optional): Limits the file size accepted to size_limit bytes. Default None.
     """
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(bucket_name)
@@ -86,4 +101,7 @@ def download_s3_folder(
             os.makedirs(os.path.dirname(target))
         if obj.key[-1] == "/":
             continue
+        if size_limit is not None:
+            if obj.size > size_limit:
+                continue
         bucket.download_file(obj.key, target)
