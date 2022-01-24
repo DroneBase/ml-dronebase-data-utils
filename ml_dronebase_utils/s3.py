@@ -24,13 +24,14 @@ def is_json(myjson: str) -> bool:
     return True
 
 
-def upload_dir(local_directory: str, bucket_name: str, prefix: str) -> None:
+def upload_dir(local_directory: str, bucket_name: str, prefix: str, exist_ok: bool = True) -> None:
     """Upload data from a local directory to an S3 bucket.
 
     Args:
         local_directory (str): Local directory to upload from.
         bucket_name (str): S3 bucket name.
-        prefix ([type]): Relative path from bucket to save data.
+        prefix (str): Relative path from bucket to save data.
+        exist_ok (bool): Decides whether or not to ignore existing files. Default True.
     """
     client = boto3.client("s3")
 
@@ -44,9 +45,12 @@ def upload_dir(local_directory: str, bucket_name: str, prefix: str) -> None:
             relative_path = os.path.relpath(local_path, local_directory)
             s3_path = os.path.join(prefix, relative_path)
 
-            try:
-                client.head_object(Bucket=bucket_name, Key=s3_path)
-            except ClientError:
+            if exist_ok:
+                try:
+                    client.head_object(Bucket=bucket_name, Key=s3_path)
+                except ClientError:
+                    client.upload_file(local_path, bucket_name, s3_path)
+            else:
                 client.upload_file(local_path, bucket_name, s3_path)
 
 
