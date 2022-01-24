@@ -59,7 +59,8 @@ def download_s3_file(
         bucket_name (str): S3 bucket name.
         prefix (str): Relative path from bucket to requested file.
         local_path (str): Local directory to store file.
-        size_limit (int, optional): Limits the file size accepted to size_limit bytes. Default None.
+        size_limit (int, optional): Limits the file size accepted to size_limit bytes.
+        Default None.
     """
     s3 = boto3.client("s3")
     if size_limit is not None:
@@ -85,7 +86,8 @@ def download_s3_folder(
         bucket_name (str): S3 bucket name.
         prefix (str): Relative path from bucket to requested files.
         local_directory (str, optional): Local directory to store files in.
-        size_limit (int, optional): Limits the file size accepted to size_limit bytes. Default None.
+        size_limit (int, optional): Limits the file size accepted to size_limit bytes.
+        Default None.
     """
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(bucket_name)
