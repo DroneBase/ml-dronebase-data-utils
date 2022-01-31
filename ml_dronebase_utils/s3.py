@@ -113,3 +113,15 @@ def download_s3_folder(
             if obj.size > size_limit:
                 continue
         bucket.download_file(obj.key, target)
+
+
+def sync_s3_folder(bucket_name: str, prefix: str, local_directory: str) -> None:
+    """Download the contents of a folder directory in parallel using aws s3 sync.
+
+    Args:
+        bucket_name (str): S3 bucket name.
+        prefix (str): Relative path from bucket to requested files.
+        local_directory (str): Local directory to store files in.
+    """
+    os.makedirs(local_directory)
+    os.system(f"aws s3 sync s3://{bucket_name}/{prefix}/ {local_directory}")
