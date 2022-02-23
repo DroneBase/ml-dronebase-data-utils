@@ -1,5 +1,6 @@
 import json
 import os
+import pathlib
 from typing import Optional
 
 import boto3
@@ -32,7 +33,17 @@ def upload_file(
     root = os.path.dirname(os.path.abspath(local_file))
     filename = os.path.basename(local_file)
     local_path = os.path.join(root, filename)
-    s3_path = os.path.join(prefix, filename)
+    print(local_path)
+
+    if not pathlib.Path(prefix).suffix:
+        s3_path = os.path.join(prefix, filename)
+    else:
+        if pathlib.Path(prefix).suffix == pathlib.Path(filename).suffix:
+            s3_path = prefix
+        else:
+            s3_path = os.path.join(os.path.dirname(prefix), filename)
+            print("Mismatched extensions.")
+            print(s3_path)
 
     if exist_ok:
         try:
