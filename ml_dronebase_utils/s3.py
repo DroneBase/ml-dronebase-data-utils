@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import warnings
 from typing import Optional
 
 import boto3
@@ -42,8 +43,9 @@ def upload_file(
             s3_path = prefix
         else:
             s3_path = os.path.join(os.path.dirname(prefix), filename)
-            print("Mismatched extensions.")
-            print(s3_path)
+            warnings.warn(
+                "Mismatched file extensions, converting prefix to local file format."
+            )
 
     if exist_ok:
         try:
