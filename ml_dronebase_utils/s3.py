@@ -1,5 +1,7 @@
 import json
 import os
+import pathlib
+import warnings
 from typing import Optional
 
 import boto3
@@ -22,6 +24,36 @@ def is_json(myjson: str) -> bool:
         return False
 
     return True
+
+
+def upload_file(
+    local_file: str, bucket_name: str, prefix: str, exist_ok: bool = True
+) -> None:
+    client = boto3.client("s3")
+
+    root = os.path.dirname(os.path.abspath(local_file))
+    filename = os.path.basename(local_file)
+    local_path = os.path.join(root, filename)
+    print(local_path)
+
+    if not pathlib.Path(prefix).suffix:
+        s3_path = os.path.join(prefix, filename)
+    else:
+        if pathlib.Path(prefix).suffix == pathlib.Path(filename).suffix:
+            s3_path = prefix
+        else:
+            s3_path = os.path.join(os.path.dirname(prefix), filename)
+            warnings.warn(
+                "Mismatched file extensions, converting prefix to local file format."
+            )
+
+    if exist_ok:
+        try:
+            client.head_object(Bucket=bucket_name, Key=s3_path)
+        except ClientError:
+            client.upload_file(local_path, bucket_name, s3_path)
+    else:
+        client.upload_file(local_path, bucket_name, s3_path)
 
 
 def upload_dir(
