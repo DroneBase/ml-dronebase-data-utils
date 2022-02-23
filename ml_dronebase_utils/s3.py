@@ -24,6 +24,25 @@ def is_json(myjson: str) -> bool:
     return True
 
 
+def upload_file(
+    local_file: str, bucket_name: str, prefix: str, exist_ok: bool = True
+) -> None:
+    client = boto3.client("s3")
+
+    root = os.path.dirname(os.path.abspath(local_file))
+    filename = os.path.basename(local_file)
+    local_path = os.path.join(root, filename)
+    s3_path = os.path.join(prefix, filename)
+
+    if exist_ok:
+        try:
+            client.head_object(Bucket=bucket_name, Key=s3_path)
+        except ClientError:
+            client.upload_file(local_path, bucket_name, s3_path)
+    else:
+        client.upload_file(local_path, bucket_name, s3_path)
+
+
 def upload_dir(
     local_directory: str, bucket_name: str, prefix: str, exist_ok: bool = True
 ) -> None:
