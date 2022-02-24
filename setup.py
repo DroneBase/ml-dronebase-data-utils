@@ -15,7 +15,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 if __name__ == "__main__":
     setup(
         name="ml-dronebase-utils",
-        version="0.4",
+        version="0.5",
         description="A collection of commonly functions used by DroneBase ML Engineers",
         long_description=long_description,
         url="https://github.com/DroneBase/ml-dronebase-utils",
