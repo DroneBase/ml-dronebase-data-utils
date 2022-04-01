@@ -24,7 +24,7 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
-known_first_party = ["ml_dronebase_utils"]
+known_first_party = ["ml_dronebase_data_utils"]
 extend_skip = ["data", "logs", "lightning_logs", "output"]
 skip_gitignore = true
 color_output = true
