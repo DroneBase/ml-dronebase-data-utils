@@ -41,7 +41,7 @@ if __name__ == "__main__":
             "tqdm>=4.62.3",
             "scikit-learn==1.0.2",
             "jinja2>=2.0.1",
-            "black>=21.11b1",
+            "black>=21.4b2",
             "isort>=5.10.1",
             "colorama",
             "flake8==4.0.1",
