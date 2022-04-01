@@ -2,13 +2,13 @@ import json
 import os
 import pathlib
 import warnings
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
 import boto3
 from botocore.exceptions import ClientError
-from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 
 def is_json(myjson: str) -> bool:
@@ -109,7 +109,9 @@ def download_file(s3_url: str, local_path: str, size_limit: Optional[int] = None
     s3.download_file(bucket_name, prefix, local_path)
 
 
-def download_dir(s3_url: str, local_path: Optional[str] = None, size_limit: Optional[int] = None):
+def download_dir(
+    s3_url: str, local_path: Optional[str] = None, size_limit: Optional[int] = None
+):
     """Download the contents of a folder directory.
 
     Args:
@@ -155,7 +157,7 @@ def split_dataset(
     data_url: str,
     train_split: Optional[float] = 0.8,
     labels_url: Optional[str] = None,
-    val_split: Optional[float] = None
+    val_split: Optional[float] = None,
 ):
     """train_test_split for files hosted in s3
 
@@ -207,7 +209,7 @@ def _split_labeled_dataset(
     data_url: str,
     labels_url: str,
     train_split: int = 0.8,
-    val_split: Optional[float] = None
+    val_split: Optional[float] = None,
 ):
     data_bucket_name, data_prefix = _parse_url(data_url)
     labels_bucket_name, labels_prefix = _parse_url(labels_url)
@@ -226,14 +228,18 @@ def _split_labeled_dataset(
         if x.key[-1] != "/"
     ]
 
-    x_train, x_val, y_train, y_val = train_test_split(data, labels, train_size=train_split)
+    x_train, x_val, y_train, y_val = train_test_split(
+        data, labels, train_size=train_split
+    )
     split_prefix = _make_split_prefix(data_prefix, "train")
     move_files(data_bucket_name, split_prefix, x_train)
     split_prefix = _make_split_prefix(labels_prefix, "train")
     move_files(labels_bucket_name, split_prefix, y_train)
 
     if val_split is not None:
-        x_val, x_test, y_val, y_test = train_test_split(x_val, y_val, train_size=val_split)
+        x_val, x_test, y_val, y_test = train_test_split(
+            x_val, y_val, train_size=val_split
+        )
         split_prefix = _make_split_prefix(data_prefix, "val")
         move_files(data_bucket_name, split_prefix, x_val)
         split_prefix = _make_split_prefix(labels_prefix, "val")
@@ -251,9 +257,7 @@ def _split_labeled_dataset(
 
 
 def _split_unlabeled_dataset(
-    data_url: str,
-    train_split: int = 0.8,
-    val_split: Optional[float] = None
+    data_url: str, train_split: int = 0.8, val_split: Optional[float] = None
 ):
     data_bucket_name, data_prefix = _parse_url(data_url)
 
