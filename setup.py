@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Setup script for installing ml-dronebase-utils."""
+"""Setup script for installing ml-dronebase-data-utils."""
 
 from codecs import open
 from os import path
@@ -14,11 +14,11 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 if __name__ == "__main__":
     setup(
-        name="ml-dronebase-utils",
-        version="0.5",
+        name="ml-dronebase-data-utils",
+        version="0.0.1",
         description="A collection of commonly functions used by DroneBase ML Engineers",
         long_description=long_description,
-        url="https://github.com/DroneBase/ml-dronebase-utils",
+        url="https://github.com/DroneBase/ml-dronebase-data-utils",
         author="Conor Wallace",
         author_email="conor.wallace@dronebase.com",
         license="MIT",
@@ -33,16 +33,16 @@ if __name__ == "__main__":
             "Operating System :: OS Independent",
         ],
         keywords="python, utilities",
-        packages=["ml_dronebase_utils"],
+        packages=["ml_dronebase_data_utils"],
         include_package_data=True,
         install_requires=[
             "boto3>=1.19.2",
             "tqdm>=4.62.3",
             "jinja2>=2.0.1",
-            "black",
-            "isort",
+            "black>=21.11b1",
+            "isort>=5.10.1",
             "colorama",
-            "flake8",
+            "flake8==4.0.1",
             "pytest",
         ],
     )
