@@ -17,7 +17,7 @@ class PascalVOCWriter:
         segmented: int = 0,
     ) -> None:
         environment = Environment(
-            loader=PackageLoader("ml_dronebase_utils", "templates"),
+            loader=PackageLoader("ml_dronebase_data_utils", "templates"),
             keep_trailing_newline=True,
         )
         self.annotation_template = environment.get_template("annotation.xml")

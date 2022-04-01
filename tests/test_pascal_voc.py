@@ -1,6 +1,6 @@
 from tempfile import NamedTemporaryFile
 
-from ml_dronebase_utils.pascal_voc import PascalVOCWriter
+from ml_dronebase_data_utils.pascal_voc import PascalVOCWriter
 
 
 def test_writer():

@@ -1,1 +1,1 @@
-include ml_dronebase_utils/templates/*.xml
+include ml_dronebase_data_utils/templates/*.xml
