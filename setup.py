@@ -18,6 +18,7 @@ if __name__ == "__main__":
         version="0.0.1",
         description="A collection of commonly functions used by DroneBase ML Engineers",
         long_description=long_description,
+        long_description_content_type="text/markdown",
         url="https://github.com/DroneBase/ml-dronebase-data-utils",
         author="Conor Wallace",
         author_email="conor.wallace@dronebase.com",
