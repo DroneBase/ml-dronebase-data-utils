@@ -150,7 +150,7 @@ def sync_dir(s3_url: str, local_path: str) -> None:
     """
     bucket_name, prefix = _parse_url(s3_url)
     os.makedirs(local_path)
-    os.system(f"aws s3 sync s3://{bucket_name}/{prefix}/ {local_path}")
+    os.system(f"aws s3 sync s3://{bucket_name}/{prefix} {local_path}")
 
 
 def split_dataset(
