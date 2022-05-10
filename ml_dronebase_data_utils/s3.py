@@ -148,6 +148,10 @@ def sync_dir(master: str, follower: str) -> None:
         master (str): S3 url or local path that is the master.
         follower (str): S3 url or local path that will be synced to the master.
     """
+
+    if "s3://" not in follower:
+        os.makedirs(follower)
+
     os.system("aws s3 sync {} {}".format(master, follower))
 
 
