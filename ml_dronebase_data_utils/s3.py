@@ -141,16 +141,16 @@ def download_dir(
         bucket.download_file(obj.key, target)
 
 
-def sync_dir(s3_url: str, local_path: str) -> None:
+def sync_dir(from_dir: str, to_dir: str) -> None:
     """Download the contents of a directory in parallel using aws s3 sync.
 
     Args:
-        s3_url (str): S3 url path to sync.
-        local_path (str): Local directory to store files in.
+        from_dir (str): S3 url or local path that is the master dir.
+        to_dir (str): S3 url or local path that will be synced to from_dir (master dir).
     """
-    bucket_name, prefix = _parse_url(s3_url)
-    os.makedirs(local_path)
-    os.system(f"aws s3 sync s3://{bucket_name}/{prefix} {local_path}")
+    if "s3://" not in to_dir:
+        os.makedirs(to_dir)
+    os.system("aws s3 sync {} {}".format(from_dir, to_dir))
 
 
 def split_dataset(
