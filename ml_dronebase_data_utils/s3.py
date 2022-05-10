@@ -145,8 +145,8 @@ def sync_dir(from_dir: str, to_dir: str) -> None:
     """Download the contents of a directory in parallel using aws s3 sync.
 
     Args:
-        from_dir (str): S3 url or local path that is the master.
-        to_dir (str): S3 url or local path that will be synced to the master.
+        from_dir (str): S3 url or local path that is the master dir.
+        to_dir (str): S3 url or local path that will be synced to from_dir (master dir).
     """
     if "s3://" not in to_dir:
         os.makedirs(to_dir)
