@@ -252,7 +252,7 @@ def _split_labeled_dataset(
     # Delete images without labels
     data = delete_missing_pairs(data, labels)
 
-    # Delete labels without images
+    # Delete labels without images 
     labels = delete_missing_pairs(labels, data)
 
     x_train, x_val, y_train, y_val = train_test_split(
