@@ -205,6 +205,27 @@ def _make_split_prefix(prefix: str, split: str) -> str:
     return split_prefix
 
 
+def delete_missing_pairs(input_data, pair_data):
+    """Delete items from input data that does not have a corresponding item in pair data
+
+    Args:
+        input_data (list): list of file paths to check
+        pair_data (list): list of file paths to find a match
+
+    Returns:
+        list: list of files with missing pairs deleted
+    """
+    to_del = []
+    for idx, pth in enumerate(input_data):
+        name = os.path.splitext(pth.split("/")[-1])[0]
+        combined = "\t".join(pair_data)
+        if name not in combined:
+            to_del.append(idx)
+    for index in sorted(to_del, reverse=True):
+        del input_data[index]
+    return input_data
+
+
 def _split_labeled_dataset(
     data_url: str,
     labels_url: str,
@@ -227,6 +248,12 @@ def _split_labeled_dataset(
         for x in labels_bucket.objects.filter(Prefix=labels_prefix)
         if x.key[-1] != "/"
     ]
+
+    # Delete images without labels
+    data = delete_missing_pairs(data, labels)
+
+    # Delete labels without images
+    labels = delete_missing_pairs(labels, data)
 
     x_train, x_val, y_train, y_val = train_test_split(
         data, labels, train_size=train_split
