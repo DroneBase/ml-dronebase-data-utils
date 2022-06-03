@@ -218,7 +218,7 @@ def delete_missing_pairs(input_data, pair_data):
     to_del = []
     for idx, pth in enumerate(input_data):
         name = os.path.splitext(pth.split("/")[-1])[0]
-        combined = '\t'.join(pair_data)
+        combined = "\t".join(pair_data)
         if name not in combined:
             to_del.append(idx)
     for index in sorted(to_del, reverse=True):
@@ -252,7 +252,7 @@ def _split_labeled_dataset(
     # Delete images without labels
     data = delete_missing_pairs(data, labels)
 
-    # Delete labels without images 
+    # Delete labels without images
     labels = delete_missing_pairs(labels, data)
 
     x_train, x_val, y_train, y_val = train_test_split(
