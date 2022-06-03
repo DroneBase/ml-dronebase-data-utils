@@ -232,7 +232,9 @@ def _split_labeled_dataset(
     labels_url: str,
     train_split: int = 0.8,
     val_split: Optional[float] = None,
-    delete_missing_pairs: Optional[bool] = False  # Assumes filenames without extension to be the same
+    delete_missing_pairs: Optional[
+        bool
+    ] = False,  # Assumes filenames without extension to be the same
 ):
     data_bucket_name, data_prefix = _parse_url(data_url)
     labels_bucket_name, labels_prefix = _parse_url(labels_url)
