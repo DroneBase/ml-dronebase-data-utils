@@ -1,7 +1,5 @@
 # Dronebase Machine Learning Data Utils
 
-## PUBLIC FACING
-
 This package contains commonly used data functions for ML Engineers
 
 ```python

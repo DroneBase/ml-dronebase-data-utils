@@ -2,12 +2,11 @@ name: Publish Python Package
 
 on:
   push:
-    branches:
-    - master
+    branches: [ main ]
 
 jobs:
   deploy:
-    
+
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +21,9 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
-    - name: Publish distribution to PyPI
+    - name: Publish distribution to DroneBase-ML Private PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        user: ${{ secrets.PRIVATE_PYPI_USER }}
+        password: ${{ secrets.PRIVATE_PYPI_PSWD }}
+        repository_url: ${{ secrets.PRIVATE_PYPI_REPO }}
