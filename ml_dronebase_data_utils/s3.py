@@ -33,14 +33,14 @@ def list_prefix(
     filter_files: Optional[bool] = False,
     filter_prefixes: Optional[bool] = False,
 ) -> List[str]:
-    """List all files and prefixes within the path of the given url.
+    """List urls to all files and prefixes within the path of the given url.
 
     Args:
         s3_url (str): The s3 url to list from.
-        filter_files (Optional[bool]): If true, output will only contain the files within the given url.
-        Defaults to False.
-        filter_prefixes (Optional[bool]): If true, output will only contain the prefixes within the given url.
-        Defaults to False.
+        filter_files (Optional[bool]): If true, output will only contain urls
+        to the files within the given url. Defaults to False.
+        filter_prefixes (Optional[bool]): If true, output will only contain urls
+        to the prefixes within the given url. Defaults to False.
 
     Returns:
         List[str]: The files and/or prefixes within the given url.
@@ -49,9 +49,13 @@ def list_prefix(
     bucket_name, prefix = _parse_url(s3_url)
     bucket = s3.Bucket(bucket_name)
     objects = bucket.objects.filter(Prefix=prefix)
-    files = [obj.key for obj in objects if obj.key != prefix]
+    files = [
+        os.path.join("s3://", bucket_name, obj.key)
+        for obj in objects
+        if obj.key != prefix
+    ]
 
-    assert not filter_files and filter_prefixes, "Can't filter files and prefixes"
+    assert not (filter_files and filter_prefixes), "Can't filter files and prefixes"
 
     if filter_files:
         files = [file for file in files if file[-1] != "/"]
