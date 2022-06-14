@@ -9,7 +9,7 @@ import boto3
 from botocore.exceptions import ClientError
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-
+import subprocess
 
 def is_json(myjson: str) -> bool:
     """Checks if the string is a json file.
@@ -186,8 +186,8 @@ def sync_dir(from_dir: str, to_dir: str) -> None:
     """
     if "s3://" not in to_dir:
         os.makedirs(to_dir)
-    os.system("aws s3 sync {} {}".format(from_dir, to_dir))
 
+    subprocess.run(["aws", "s3", "sync", from_dir, to_dir])
 
 def split_dataset(
     data_url: str,
