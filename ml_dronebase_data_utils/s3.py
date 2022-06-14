@@ -186,7 +186,10 @@ def sync_dir(from_dir: str, to_dir: str) -> None:
     """
     if "s3://" not in to_dir:
         os.makedirs(to_dir)
+    print(f"Sync from URL: {from_dir}")
+    print(f"Sync to dir: {to_dir}")
     os.system("aws s3 sync {} {}".format(from_dir, to_dir))
+    print("Just ran the system command...")
 
 
 def split_dataset(
