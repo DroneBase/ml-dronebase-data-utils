@@ -187,7 +187,9 @@ def sync_dir(from_dir: str, to_dir: str) -> None:
     if "s3://" not in to_dir:
         os.makedirs(to_dir)
 
-    subprocess.run(["aws", "s3", "sync", from_dir, to_dir])
+    result = subprocess.run(["aws", "s3", "sync", from_dir, to_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print(result.stdout)
+    print(result.stderr)
 
 def split_dataset(
     data_url: str,
