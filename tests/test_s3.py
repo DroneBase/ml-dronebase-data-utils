@@ -1,4 +1,7 @@
-from ml_dronebase_data_utils.s3 import list_prefix
+import glob
+import os
+
+from ml_dronebase_data_utils.s3 import list_prefix, sync_dir
 
 
 def test_imports():
@@ -24,3 +27,13 @@ def test_list_prefix_prefixes():
     data_url = "s3://ml-detectron-test-dataset/data/solar-panel-dataset/predict/"
     data_prefixes = list_prefix(data_url, filter_files=False, filter_prefixes=True)
     assert data_prefixes[0] == data_prefix
+
+
+def test_sync():
+    data_url = (
+        "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/annotations/"
+    )
+    data_dir = "solar-panel-dataset-v2/train/annotations/"
+    sync_dir(from_dir=data_url, to_dir=data_dir)
+    data_files = glob.glob(os.path.join(data_dir, "*"))
+    assert len(data_files) > 0
