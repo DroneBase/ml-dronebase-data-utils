@@ -243,6 +243,7 @@ def _make_split_prefix(prefix: str, split: str) -> str:
 
 def delete_missing_pairs(input_data, pair_data):
     """Delete items from input data that does not have a corresponding item in pair data
+       This assumes that the filenames without extensions to be the same in both input lists
 
     Args:
         input_data (list): list of file paths to check
@@ -253,7 +254,7 @@ def delete_missing_pairs(input_data, pair_data):
     """
     to_del = []
     for idx, pth in enumerate(input_data):
-        name = os.path.splitext(pth.split("/")[-1])[0]
+        name = pathlib.Path(pth).stem
         combined = "\t".join(pair_data)
         if name not in combined:
             to_del.append(idx)
@@ -267,6 +268,9 @@ def _split_labeled_dataset(
     labels_url: str,
     train_split: int = 0.8,
     val_split: Optional[float] = None,
+    delete_missing_pairs: Optional[
+        bool
+    ] = False,  # Assumes filenames without extension to be the same
 ):
     data_bucket_name, data_prefix = _parse_url(data_url)
     labels_bucket_name, labels_prefix = _parse_url(labels_url)
@@ -285,11 +289,12 @@ def _split_labeled_dataset(
         if x.key[-1] != "/"
     ]
 
-    # Delete images without labels
-    data = delete_missing_pairs(data, labels)
+    if delete_missing_pairs:
+        # Delete images without labels
+        data = delete_missing_pairs(data, labels)
 
-    # Delete labels without images
-    labels = delete_missing_pairs(labels, data)
+        # Delete labels without images
+        labels = delete_missing_pairs(labels, data)
 
     x_train, x_val, y_train, y_val = train_test_split(
         data, labels, train_size=train_split
