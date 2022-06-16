@@ -85,9 +85,9 @@ def list_prefix(
     ]
 
     if filter_files:
-        files = [file for file in files if file[-1] != "/"]
+        files = [f for f in files if f[-1] != "/"]
     elif filter_prefixes:
-        files = [file for file in files if file[-1] == "/"]
+        files = [f for f in files if f[-1] == "/"]
     return files
 
 
