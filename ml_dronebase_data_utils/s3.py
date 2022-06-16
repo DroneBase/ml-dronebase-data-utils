@@ -45,14 +45,25 @@ def list_prefix(
     Returns:
         List[str]: The files and/or prefixes within the given url.
     """
-    s3 = boto3.resource("s3")
     bucket_name, prefix = _parse_url(s3_url)
-    bucket = s3.Bucket(bucket_name)
-    objects = bucket.objects.filter(Prefix=prefix)
+    print(bucket_name, prefix)
+
+    client = boto3.client('s3')
+    paginator = client.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix, MaxKeys=1000)
+    objects = []
+    for page in page_iterator:
+        if "Contents" in page:
+            for key in page["Contents"]:
+                keyString = key["Key"]
+                objects.append(keyString)
+
+    print(objects)
+
     files = [
-        os.path.join("s3://", bucket_name, obj.key)
+        os.path.join("s3://", bucket_name, obj)
         for obj in objects
-        if obj.key != prefix
+        if obj != prefix
     ]
 
     assert not (filter_files and filter_prefixes), "Can't filter files and prefixes"
