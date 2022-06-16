@@ -28,6 +28,32 @@ def is_json(myjson: str) -> bool:
     return True
 
 
+def list_prefixes(bucket_name, prefix):
+    client = boto3.client("s3")
+    paginator = client.get_paginator("list_objects")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix, Delimiter="/")
+
+    objects = []
+    for page in page_iterator:
+        for key in page["CommonPrefixes"]:
+            keyString = key["Prefix"]
+            objects.append(keyString)
+    return objects
+
+
+def list_files(bucket_name, prefix):
+    client = boto3.client("s3")
+    paginator = client.get_paginator("list_objects")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+    objects = []
+    for page in page_iterator:
+        for key in page["Contents"]:
+            keyString = key["Key"]
+            objects.append(keyString)
+    return objects
+
+
 def list_prefix(
     s3_url: str,
     filter_files: Optional[bool] = False,
@@ -45,28 +71,18 @@ def list_prefix(
     Returns:
         List[str]: The files and/or prefixes within the given url.
     """
-    bucket_name, prefix = _parse_url(s3_url)
-    print(bucket_name, prefix)
-
-    client = boto3.client('s3')
-    paginator = client.get_paginator("list_objects_v2")
-    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix, MaxKeys=1000)
-    objects = []
-    for page in page_iterator:
-        if "Contents" in page:
-            for key in page["Contents"]:
-                keyString = key["Key"]
-                objects.append(keyString)
-
-    print(objects)
-
-    files = [
-        os.path.join("s3://", bucket_name, obj)
-        for obj in objects
-        if obj != prefix
-    ]
 
     assert not (filter_files and filter_prefixes), "Can't filter files and prefixes"
+
+    bucket_name, prefix = _parse_url(s3_url)
+    if filter_files:
+        objects = list_files(bucket_name, prefix)
+    elif filter_prefixes:
+        objects = list_prefixes(bucket_name, prefix)
+
+    files = [
+        os.path.join("s3://", bucket_name, obj) for obj in objects if obj != prefix
+    ]
 
     if filter_files:
         files = [file for file in files if file[-1] != "/"]
