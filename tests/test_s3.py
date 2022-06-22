@@ -1,5 +1,4 @@
 import glob
-import logging
 import os
 
 from ml_dronebase_data_utils.s3 import list_prefix, sync_dir
