@@ -92,12 +92,12 @@ def calculate_angle(x1: float, y1: float, x2: float, y2: float) -> float:
     Adapted from detectron2.structures.rotated_boxes
     angle in range: (-90, 90] degrees
 
-    1. When angle == 0:
-        box_rotated == box
-    2. When angle > 0:
+    1. When angle in (-90, 90]:
+        box_rotated is obtained by rotating box w.r.t its center by :math:`|angle|` degrees CCW;
+    2. When angle > 90:
         box_rotated is obtained by rotating box w.r.t its center by :math:`|angle| % 90` degrees CCW;
-    3. When angle < 0
-        box_rotated is obtained by rotating box w.r.t its center by :math:`|angle| % 90` degrees CW.
+    3. When angle < -90
+        box_rotated is obtained by rotating box w.r.t its center by :math:`-|angle| % 90` degrees CCW.
 
     Args:
         x1 (float): x coordinate of rotation point

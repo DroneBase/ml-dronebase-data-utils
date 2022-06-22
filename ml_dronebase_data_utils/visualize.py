@@ -29,7 +29,6 @@ def draw_rotated_boxes(
     outline: str = "red",
     width: int = 3,
 ) -> Image.Image:
-    # convert boxes to polygons
     polygons = rotated_boxes_to_vertices(boxes, box_mode)
     if not isinstance(image, Image.Image):
         image = Image.fromarray(image)
@@ -47,16 +46,6 @@ def draw_rotated_boxes(
             outline=outline,
             width=width,
         )
-    # draw.polygon(
-    #     xy=(
-    #         (3872, 3634),
-    #         (3904, 3649),
-    #         (3880, 3700),
-    #         (3849, 3686),
-    #         (3872, 3634)
-    #     ),
-    #     outline=outline
-    # )
     return image
 
 
