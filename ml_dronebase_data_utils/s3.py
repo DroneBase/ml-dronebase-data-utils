@@ -29,6 +29,32 @@ def is_json(myjson: str) -> bool:
     return True
 
 
+def list_prefixes(bucket_name, prefix):
+    client = boto3.client("s3")
+    paginator = client.get_paginator("list_objects")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix, Delimiter="/")
+
+    objects = []
+    for page in page_iterator:
+        for key in page["CommonPrefixes"]:
+            keyString = key["Prefix"]
+            objects.append(keyString)
+    return objects
+
+
+def list_files(bucket_name, prefix):
+    client = boto3.client("s3")
+    paginator = client.get_paginator("list_objects")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+    objects = []
+    for page in page_iterator:
+        for key in page["Contents"]:
+            keyString = key["Key"]
+            objects.append(keyString)
+    return objects
+
+
 def list_prefix(
     s3_url: str,
     filter_files: Optional[bool] = False,
@@ -46,22 +72,23 @@ def list_prefix(
     Returns:
         List[str]: The files and/or prefixes within the given url.
     """
-    s3 = boto3.resource("s3")
-    bucket_name, prefix = _parse_url(s3_url)
-    bucket = s3.Bucket(bucket_name)
-    objects = bucket.objects.filter(Prefix=prefix)
-    files = [
-        os.path.join("s3://", bucket_name, obj.key)
-        for obj in objects
-        if obj.key != prefix
-    ]
 
     assert not (filter_files and filter_prefixes), "Can't filter files and prefixes"
 
+    bucket_name, prefix = _parse_url(s3_url)
     if filter_files:
-        files = [file for file in files if file[-1] != "/"]
+        objects = list_files(bucket_name, prefix)
     elif filter_prefixes:
-        files = [file for file in files if file[-1] == "/"]
+        objects = list_prefixes(bucket_name, prefix)
+
+    files = [
+        os.path.join("s3://", bucket_name, obj) for obj in objects if obj != prefix
+    ]
+
+    if filter_files:
+        files = [f for f in files if f[-1] != "/"]
+    elif filter_prefixes:
+        files = [f for f in files if f[-1] == "/"]
     return files
 
 
@@ -248,6 +275,7 @@ def _make_split_prefix(prefix: str, split: str) -> str:
 
 def delete_missing_pairs(input_data, pair_data):
     """Delete items from input data that does not have a corresponding item in pair data
+       This assumes that the filenames without extensions to be the same in both input lists
 
     Args:
         input_data (list): list of file paths to check
@@ -258,7 +286,7 @@ def delete_missing_pairs(input_data, pair_data):
     """
     to_del = []
     for idx, pth in enumerate(input_data):
-        name = os.path.splitext(pth.split("/")[-1])[0]
+        name = pathlib.Path(pth).stem
         combined = "\t".join(pair_data)
         if name not in combined:
             to_del.append(idx)
@@ -272,6 +300,9 @@ def _split_labeled_dataset(
     labels_url: str,
     train_split: int = 0.8,
     val_split: Optional[float] = None,
+    delete_missing_pairs: Optional[
+        bool
+    ] = False,  # Assumes filenames without extension to be the same
 ):
     data_bucket_name, data_prefix = _parse_url(data_url)
     labels_bucket_name, labels_prefix = _parse_url(labels_url)
@@ -290,11 +321,12 @@ def _split_labeled_dataset(
         if x.key[-1] != "/"
     ]
 
-    # Delete images without labels
-    data = delete_missing_pairs(data, labels)
+    if delete_missing_pairs:
+        # Delete images without labels
+        data = delete_missing_pairs(data, labels)
 
-    # Delete labels without images
-    labels = delete_missing_pairs(labels, data)
+        # Delete labels without images
+        labels = delete_missing_pairs(labels, data)
 
     x_train, x_val, y_train, y_val = train_test_split(
         data, labels, train_size=train_split
