@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 
 from ml_dronebase_data_utils.s3 import list_prefix, sync_dir
@@ -34,9 +35,9 @@ def test_sync_dir():
         "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/annotations/"
     )
     data_dir = "solar-panel-dataset-v2/train/annotations/"
-    print(f"Data URL = {data_url}")
-    print(f"Data Dir = {data_dir}")
+    logging.info(f"Data URL = {data_url}")
+    logging.info(f"Data Dir = {data_dir}")
 
     sync_dir(from_dir=data_url, to_dir=data_dir)
     data_files = glob.glob(os.path.join(data_dir, "*"))
-    print(f"Data Files = {data_files}")
+    logging.info(f"Data Files = {data_files}")
