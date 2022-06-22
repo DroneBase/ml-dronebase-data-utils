@@ -30,14 +30,11 @@ def test_list_prefix_prefixes():
     assert data_prefixes[0] == data_prefix
 
 
-def test_sync_dir():
+def test_sync():
     data_url = (
         "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/annotations/"
     )
     data_dir = "solar-panel-dataset-v2/train/annotations/"
-    logging.info(f"Data URL = {data_url}")
-    logging.info(f"Data Dir = {data_dir}")
-
     sync_dir(from_dir=data_url, to_dir=data_dir)
     data_files = glob.glob(os.path.join(data_dir, "*"))
-    logging.info(f"Data Files = {data_files}")
+    assert len(data_files) > 0
