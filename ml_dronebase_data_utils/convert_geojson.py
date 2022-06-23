@@ -60,8 +60,8 @@ def get_pixel_vertices(ortho: DatasetReader, gdf: GeoDataFrame) -> np.ndarray:
     geo_vertices = [p.exterior.coords for p in polys]
 
     pxl_vertices = []
-    for i, geo_v in enumerate(tqdm(geo_vertices, total=len(geo_vertices))):
-        pxl_v = [ortho.index(x, y) for x, y in geo_v]
+    for _, geo_v in enumerate(tqdm(geo_vertices, total=len(geo_vertices))):
+        pxl_v = [ortho.index(c[0], c[1]) for c in geo_v[:2]]
         pxl_v = np.asarray(pxl_v)
         # swap axes (y, x) -> (x, y)
         pxl_v[:, [1, 0]] = pxl_v[:, [0, 1]]
