@@ -9,6 +9,7 @@ from .box_utils import rotated_boxes_to_vertices
 def draw_boxes(
     image: Union[Image.Image, np.ndarray],
     boxes: Optional[Union[np.ndarray, List[List[float]]]],
+    classes:list = [],
     outline: str = "red",
 ) -> Image.Image:
     if isinstance(boxes, np.ndarray):
@@ -16,9 +17,15 @@ def draw_boxes(
     if not isinstance(image, Image.Image):
         image = Image.fromarray(image)
 
+    draw_classes = False
+    if len(classes) > 0:
+        draw_classes = True
+
     draw = ImageDraw.Draw(image)
-    for box in boxes:
+    for idx,box in enumerate(boxes):
         draw.rectangle(box, outline=outline)
+        if draw_classes:
+            draw.text((box[0],box[1]),str(classes[idx]))
     return image
 
 

@@ -30,11 +30,16 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
         names = [default_class]*len(boxes)
 
     for box, name in zip(boxes, names):
+        # Dumb Logic
+        try:
+            # int(name) might be too restrictive in some scenarios, adapt if required
+            name = int(name)
+        except ValueError:
+            pass
         if name in skip_classes:
             continue
         if class_mapping is not None:
-            # int(name) might be too restrictive in some scenarios, adapt if required
-            name = class_mapping.get(int(name),default_class)
+            name = class_mapping.get(name,default_class)
         if rotated:
             xmin, ymin, xmax, ymax, angle = box
             writer.addObject(name, xmin, ymin, xmax, ymax, angle)
@@ -44,7 +49,7 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
 
     if "s3://" in save_path:
         writer.save("annot.xml")
-        upload_file("annot.xml", save_path)
+        upload_file("annot.xml", save_path, exist_ok=False)
         os.remove("annot.xml")
     else:
         writer.save(save_path)
