@@ -12,18 +12,25 @@ from .pascal_voc import PascalVOCWriter
 from .s3 import upload_file
 
 
-def geo_to_voc(ortho_path: str, geo_path: str, save_path: str):
+def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, rotated: bool = False):
     ortho = rasterio.open(ortho_path)
     gdf = gpd.read_file(geo_path)
 
     writer = PascalVOCWriter(ortho_path, ortho.width, ortho.height)
 
     vertices = get_pixel_vertices(ortho, gdf)
-    boxes = vertices_to_boxes(vertices)
+    if rotated:
+        boxes = vertices_to_rotated_boxes(vertices)
+    else:
+        boxes = vertices_to_boxes(vertices)
 
     for box in boxes:
-        xmin, ymin, xmax, ymax = box
-        writer.addObject("panel", xmin, ymin, xmax, ymax)
+        if rotated:
+            xmin, ymin, xmax, ymax, angle = box
+            writer.addObject("panel", xmin, ymin, xmax, ymax, angle)
+        else:
+            xmin, ymin, xmax, ymax = box
+            writer.addObject("panel", xmin, ymin, xmax, ymax)
 
     if "s3://" in save_path:
         writer.save("annot.xml")
@@ -34,24 +41,8 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str):
 
 
 def geo_to_rotated_voc(ortho_path: str, geo_path: str, save_path: str):
-    ortho = rasterio.open(ortho_path)
-    gdf = gpd.read_file(geo_path)
-
-    writer = PascalVOCWriter(ortho_path, ortho.width, ortho.height)
-
-    vertices = get_pixel_vertices(ortho, gdf)
-    boxes = vertices_to_rotated_boxes(vertices)
-
-    for box in boxes:
-        xmin, ymin, xmax, ymax, angle = box
-        writer.addObject("panel", xmin, ymin, xmax, ymax, angle)
-
-    if "s3://" in save_path:
-        writer.save("annot.xml")
-        upload_file("annot.xml", save_path)
-        os.remove("annot.xml")
-    else:
-        writer.save(save_path)
+    # Migrated rotated logic to geo_to_voc and only keeping it for compatibility
+    geo_to_voc(ortho_path,geo_path,save_path,rotated=True)
 
 
 def get_pixel_vertices(ortho: DatasetReader, gdf: GeoDataFrame) -> np.ndarray:
