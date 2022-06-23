@@ -12,7 +12,7 @@ from .pascal_voc import PascalVOCWriter
 from .s3 import upload_file
 
 
-def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, rotated: bool = False):
+def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: str = None, class_mapping:dict = None,default_class:str = 'panel',skip_classes: list =[], rotated: bool = False):
     ortho = rasterio.open(ortho_path)
     gdf = gpd.read_file(geo_path)
 
@@ -24,13 +24,23 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, rotated: bool = F
     else:
         boxes = vertices_to_boxes(vertices)
 
-    for box in boxes:
+    if class_attribute is not None:
+        names = gdf[class_attribute]
+    else:
+        names = [default_class]*len(boxes)
+
+    for box, name in zip(boxes, names):
+        if name in skip_classes:
+            continue
+        if class_mapping is not None:
+            # int(name) might be too restrictive in some scenarios, adapt if required
+            name = class_mapping.get(int(name),default_class)
         if rotated:
             xmin, ymin, xmax, ymax, angle = box
-            writer.addObject("panel", xmin, ymin, xmax, ymax, angle)
+            writer.addObject(name, xmin, ymin, xmax, ymax, angle)
         else:
             xmin, ymin, xmax, ymax = box
-            writer.addObject("panel", xmin, ymin, xmax, ymax)
+            writer.addObject(name, xmin, ymin, xmax, ymax)
 
     if "s3://" in save_path:
         writer.save("annot.xml")
@@ -40,9 +50,9 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, rotated: bool = F
         writer.save(save_path)
 
 
-def geo_to_rotated_voc(ortho_path: str, geo_path: str, save_path: str):
+def geo_to_rotated_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: str = None, class_mapping:dict = None,default_class:str = 'panel',skip_classes: list =[]):
     # Migrated rotated logic to geo_to_voc and only keeping it for compatibility
-    geo_to_voc(ortho_path,geo_path,save_path,rotated=True)
+    geo_to_voc(ortho_path,geo_path,save_path,class_attribute,class_mapping,default_class,skip_classes,rotated=True)
 
 
 def get_pixel_vertices(ortho: DatasetReader, gdf: GeoDataFrame) -> np.ndarray:
