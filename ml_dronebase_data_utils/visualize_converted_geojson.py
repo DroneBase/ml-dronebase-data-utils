@@ -104,7 +104,7 @@ def visualize(**kwargs):
             if upload:
                 upload_file(sp,orig_save_path,exist_ok=False)
 
-if __name__ == "__main__":
+def visualize_converted_geojson():
     parser = argparse.ArgumentParser(description="Visualize converted geojson for quick visual inspection")
 
     parser.add_argument('--ortho-path','-o',required=True,help="The ortho path, can be local/s3")
@@ -116,3 +116,6 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     visualize(**args)
+
+if __name__ == "__main__":
+    visualize_converted_geojson()

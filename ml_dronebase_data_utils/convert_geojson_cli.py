@@ -76,8 +76,7 @@ def run_geojson_conversion(**kwargs):
             rotated
         )
 
-
-if __name__ == "__main__":
+def convert_geojson_cli():
     import argparse
 
     parser = argparse.ArgumentParser(description="Convert geojson to voc format data")
@@ -110,3 +109,7 @@ if __name__ == "__main__":
         args['class_mapping'] = mapping
 
     run_geojson_conversion(**args)
+
+
+if __name__ == "__main__":
+    convert_geojson_cli()
