@@ -62,12 +62,16 @@ if __name__ == "__main__":
     class_mapping = args.get('class_mapping',None)
     if class_mapping is not None:
         mapping = {}
-        with open('class_mapping') as cm:
+        with open(class_mapping) as cm:
             for line in cm:
-                key,value = line.split(':',maxsplit=2)
-                key = key.strip()
-                value = value.strip('\n').strip()
+                line = line.strip('\n')
+                if len(line) < 1:
+                    continue
+                key,value = line.split('=',maxsplit=1)
+                # Currently only supports int, tweak this if required
+                key = int(key.strip())
+                value = value.strip()
                 mapping[key] = value
         args['class_mapping'] = mapping
 
-    run_geojson_conversion(args)
+    run_geojson_conversion(**args)

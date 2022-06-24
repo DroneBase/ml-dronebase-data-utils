@@ -34,15 +34,15 @@ def visualize(**kwargs):
             download_file(ortho_path,path)
             ortho_path = path
         
-        if "s3://" in annotation_path:
+        if "s3://" in anno_path:
             # Download
-            path = os.path.join(tmpdir,os.path.basename(annotation_path))
-            download_file(annotation_path,path)
-            annotation_path = path
+            path = os.path.join(tmpdir,os.path.basename(anno_path))
+            download_file(anno_path,path)
+            anno_path = path
         
         img = Image.open(ortho_path)
 
-        parser = minidom.parse(annotation_path)
+        parser = minidom.parse(anno_path)
 
         annotations = parser.getElementsByTagName('object')
 
