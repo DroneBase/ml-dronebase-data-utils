@@ -57,7 +57,9 @@ def visualize(**kwargs):
         anno_paths.append(anno_path)
         save_paths.append(save_path)
 
-    for op,ap,sp in zip(orthos,anno_paths,save_paths):
+    total_count = len(orthos)
+    for idx,(op,ap,sp) in enumerate(zip(orthos,anno_paths,save_paths)):
+        print(f"Processing file {idx+1}/{total_count}, {op}",end='\r')
         # Create a temporary directory which is cleaned up after use
         with tempfile.TemporaryDirectory() as tmpdir:
             if "s3://" in op:

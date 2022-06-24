@@ -63,7 +63,9 @@ def run_geojson_conversion(**kwargs):
     skip_classes = kwargs.get('skip_classes',[])
     rotated = kwargs.get('rotated',False)
 
-    for op,gjson,sp in zip(orthos,geojsons,save_paths):
+    total_count = len(orthos)
+    for idx, (op,gjson,sp) in enumerate(zip(orthos,geojsons,save_paths)):
+        print(f"Processing file {idx+1}/{total_count}, {op}",end='\r')
         #Call the function
         geo_to_voc(
             op,
