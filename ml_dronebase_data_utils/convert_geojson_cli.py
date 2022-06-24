@@ -50,7 +50,7 @@ def run_geojson_conversion(**kwargs):
             print("All orthos don't have geojsons")
             return 2
         for g in geojsons:
-            save_paths.append(Path(save_path).joinpath(f'{Path(g).stem}.xml'))
+            save_paths.append(str(Path(save_path).joinpath(f'{Path(g).stem}.xml')).replace('s3:/','s3://'))
     else:
         orthos.append(ortho_path)
         geojsons.append(geojson)

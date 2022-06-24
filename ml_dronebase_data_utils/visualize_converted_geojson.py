@@ -51,7 +51,7 @@ def visualize(**kwargs):
             print("All orthos don't have geojsons")
             return 2
         for g in anno_paths:
-            save_paths.append(Path(save_path).joinpath(f'{Path(g).stem}_annotated.png'))
+            save_paths.append(str(Path(save_path).joinpath(f'{Path(g).stem}_annotated.png')).replace('s3:/','s3://'))
     else:
         orthos.append(ortho_path)
         anno_paths.append(anno_path)
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     parser.add_argument('--anno-path','-a',required=True,help="The ortho path, can be local/s3")
     parser.add_argument('--save-path','-s',required=True,help="The ortho path, can be local/s3")
     parser.add_argument('--draw-labels','-d',action='store_true',default=False,help="Draw the class labels")
-    parser.add_argument('--batch','-b',action='store_true',deafult=False,help="Run in batched mode")
+    parser.add_argument('--batch','-b',action='store_true',default=False,help="Run in batched mode")
 
     args = vars(parser.parse_args())
 
