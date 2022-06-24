@@ -1,10 +1,11 @@
 from ml_dronebase_data_utils.visualize import draw_boxes
-from ml_dronebase_data_utils.s3 import download_file, upload_file
+from ml_dronebase_data_utils.s3 import download_file, upload_file, list_prefix
 from PIL import Image
 from xml.dom import minidom
 import os
 import tempfile
 import argparse
+from pathlib import Path
 
 def visualize(**kwargs):
     '''
@@ -25,52 +26,83 @@ def visualize(**kwargs):
     if ortho_path is None or anno_path is None or save_path is None:
         print("You must specify ortho_path, anno_path and save_path")
         return 1
+
+    batch = kwargs.get('batch',False)
     
-    # Create a temporary directory which is cleaned up after use
-    with tempfile.TemporaryDirectory() as tmpdir:
+    orthos = []
+    anno_paths = []
+    save_paths = []
+    if batch:
         if "s3://" in ortho_path:
-            # Download
-            path = os.path.join(tmpdir,os.path.basename(ortho_path))
-            download_file(ortho_path,path)
-            ortho_path = path
-        
+            for l in list_prefix(ortho_path,filter_files=True):
+                orthos.append(l)
+        else:
+            for l in Path(ortho_path).iterdir():
+                if l.is_file():
+                    orthos.append(str(l))
         if "s3://" in anno_path:
-            # Download
-            path = os.path.join(tmpdir,os.path.basename(anno_path))
-            download_file(anno_path,path)
-            anno_path = path
-        
-        img = Image.open(ortho_path)
+            for l in list_prefix(anno_path,filter_files=True):
+                anno_paths.append(l)
+        else:
+            for l in Path(anno_path).iterdir():
+                if l.is_file():
+                    anno_paths.append(str(l))
+        if len(orthos) != len(anno_paths):
+            print("All orthos don't have geojsons")
+            return 2
+        for g in anno_paths:
+            save_paths.append(Path(save_path).joinpath(f'{Path(g).stem}_annotated.png'))
+    else:
+        orthos.append(ortho_path)
+        anno_paths.append(anno_path)
+        save_paths.append(save_path)
 
-        parser = minidom.parse(anno_path)
+    for op,ap,sp in zip(orthos,anno_paths,save_paths):
+        # Create a temporary directory which is cleaned up after use
+        with tempfile.TemporaryDirectory() as tmpdir:
+            if "s3://" in op:
+                # Download
+                path = os.path.join(tmpdir,os.path.basename(op))
+                download_file(op,path)
+                op = path
+            
+            if "s3://" in anno_path:
+                # Download
+                path = os.path.join(tmpdir,os.path.basename(ap))
+                download_file(ap,path)
+                ap = path
+            
+            img = Image.open(op)
 
-        annotations = parser.getElementsByTagName('object')
+            parser = minidom.parse(ap)
 
-        boxes = []
-        classes = []
+            annotations = parser.getElementsByTagName('object')
 
-        for a in annotations:
-            xmin = int(a.getElementsByTagName('xmin')[0].firstChild.data)
-            xmax = int(a.getElementsByTagName('xmax')[0].firstChild.data)
-            ymin = int(a.getElementsByTagName('ymin')[0].firstChild.data)
-            ymax = int(a.getElementsByTagName('ymax')[0].firstChild.data)
-            boxes.append([xmin,ymin,xmax,ymax])
-            if draw_labels:
-                class_name = a.getElementsByTagName('name')[0].firstChild.data
-                classes.append(class_name)
+            boxes = []
+            classes = []
 
-        img_drawn = draw_boxes(img,boxes,classes)
+            for a in annotations:
+                xmin = int(a.getElementsByTagName('xmin')[0].firstChild.data)
+                xmax = int(a.getElementsByTagName('xmax')[0].firstChild.data)
+                ymin = int(a.getElementsByTagName('ymin')[0].firstChild.data)
+                ymax = int(a.getElementsByTagName('ymax')[0].firstChild.data)
+                boxes.append([xmin,ymin,xmax,ymax])
+                if draw_labels:
+                    class_name = a.getElementsByTagName('name')[0].firstChild.data
+                    classes.append(class_name)
 
-        upload = False
-        if "s3://" in save_path:
-            orig_save_path = save_path
-            save_path = os.path.join(tmpdir,os.path.basename(save_path))
-            upload = True
+            img_drawn = draw_boxes(img,boxes,classes)
 
-        img_drawn.save(save_path)
+            upload = False
+            if "s3://" in sp:
+                orig_save_path = sp
+                sp = os.path.join(tmpdir,os.path.basename(sp))
+                upload = True
 
-        if upload:
-            upload_file(save_path,orig_save_path,exist_ok=False)
+            img_drawn.save(sp)
+
+            if upload:
+                upload_file(sp,orig_save_path,exist_ok=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Visualize converted geojson for quick visual inspection")
@@ -79,6 +111,7 @@ if __name__ == "__main__":
     parser.add_argument('--anno-path','-a',required=True,help="The ortho path, can be local/s3")
     parser.add_argument('--save-path','-s',required=True,help="The ortho path, can be local/s3")
     parser.add_argument('--draw-labels','-d',action='store_true',default=False,help="Draw the class labels")
+    parser.add_argument('--batch','-b',action='store_true',deafult=False,help="Run in batched mode")
 
     args = vars(parser.parse_args())
 
