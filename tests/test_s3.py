@@ -31,7 +31,7 @@ def test_list_prefix_prefixes():
 
 def test_sync():
     data_url = (
-        "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/annotations/"
+        "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/train_only_annots/"
     )
     data_dir = "solar-panel-dataset-v2/train/annotations/"
     sync_dir(from_dir=data_url, to_dir=data_dir)
