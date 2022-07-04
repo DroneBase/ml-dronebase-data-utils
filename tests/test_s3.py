@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 from ml_dronebase_data_utils.s3 import list_prefix, sync_dir
 
@@ -37,3 +38,6 @@ def test_sync():
     sync_dir(from_dir=data_url, to_dir=data_dir)
     data_files = glob.glob(os.path.join(data_dir, "*"))
     assert len(data_files) > 0
+
+    # Remove synced dir locally
+    shutil.rmtree('solar-panel-dataset-v2')
