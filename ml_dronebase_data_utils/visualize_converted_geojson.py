@@ -84,10 +84,10 @@ def visualize(**kwargs):
             classes = []
 
             for a in annotations:
-                xmin = int(a.getElementsByTagName('xmin')[0].firstChild.data)
-                xmax = int(a.getElementsByTagName('xmax')[0].firstChild.data)
-                ymin = int(a.getElementsByTagName('ymin')[0].firstChild.data)
-                ymax = int(a.getElementsByTagName('ymax')[0].firstChild.data)
+                xmin = float(a.getElementsByTagName('xmin')[0].firstChild.data)
+                xmax = float(a.getElementsByTagName('xmax')[0].firstChild.data)
+                ymin = float(a.getElementsByTagName('ymin')[0].firstChild.data)
+                ymax = float(a.getElementsByTagName('ymax')[0].firstChild.data)
                 boxes.append([xmin,ymin,xmax,ymax])
                 if draw_labels:
                     class_name = a.getElementsByTagName('name')[0].firstChild.data

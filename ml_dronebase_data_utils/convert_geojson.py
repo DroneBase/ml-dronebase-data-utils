@@ -96,11 +96,11 @@ def get_pixel_vertices(ortho: DatasetReader, gdf: GeoDataFrame) -> np.ndarray:
     for geo_v in tqdm(
         geo_vertices, total=len(geo_vertices), desc="Extracting Pixel Vertices"
     ):
-        geo_v_ = [[x, y] for x, y in geo_v]
+        geo_v_ = [[c[0], c[1]] for c in geo_v]
         geo_v_ = np.asarray(geo_v_)
         geo_v_[:, [1, 0]] = geo_v_[:, [0, 1]]
         logging.info(f"get_pixel_vertices:: geo vertices = {geo_v_}")
-        pxl_v = [ortho.index(x, y) for x, y in geo_v]
+        pxl_v = [ortho.index(c[0], c[1]) for c in geo_v]
         pxl_v = np.asarray(pxl_v)
         # swap axes (y, x) -> (x, y)
         pxl_v[:, [1, 0]] = pxl_v[:, [0, 1]]
