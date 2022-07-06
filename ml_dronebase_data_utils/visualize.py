@@ -37,7 +37,10 @@ def draw_rotated_boxes(
     outline: str = "red",
     width: int = 3,
 ) -> Image.Image:
-    polygons = rotated_boxes_to_vertices(boxes, box_mode)
+    if len(classes):
+        polygons,classes = rotated_boxes_to_vertices(boxes, box_mode, classes)
+    else:
+        polygons = rotated_boxes_to_vertices(boxes, box_mode)
     if not isinstance(image, Image.Image):
         image = Image.fromarray(image)
     
