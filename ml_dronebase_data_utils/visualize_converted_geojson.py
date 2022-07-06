@@ -1,4 +1,4 @@
-from ml_dronebase_data_utils.visualize import draw_boxes
+from ml_dronebase_data_utils.visualize import draw_rotated_boxes
 from ml_dronebase_data_utils.s3 import download_file, upload_file, list_prefix
 from PIL import Image
 from xml.dom import minidom
@@ -88,12 +88,17 @@ def visualize(**kwargs):
                 xmax = float(a.getElementsByTagName('xmax')[0].firstChild.data)
                 ymin = float(a.getElementsByTagName('ymin')[0].firstChild.data)
                 ymax = float(a.getElementsByTagName('ymax')[0].firstChild.data)
-                boxes.append([xmin,ymin,xmax,ymax])
+                try:
+                    angle = float(a.getElementsByTagName('angle')[0].firstChild.data)
+                except ValueError:
+                    angle = 0.0
+                boxes.append([xmin,ymin,xmax,ymax,angle])
                 if draw_labels:
                     class_name = a.getElementsByTagName('name')[0].firstChild.data
                     classes.append(class_name)
 
-            img_drawn = draw_boxes(img,boxes,classes)
+            #img_drawn = draw_ (img,boxes,classes)
+            img_drawn = draw_rotated_boxes(img,boxes,classes=classes,box_mode='XYXYA_ABS')
 
             upload = False
             if "s3://" in sp:
