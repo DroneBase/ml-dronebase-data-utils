@@ -62,6 +62,7 @@ def run_geojson_conversion(**kwargs):
     default_class = kwargs.get('default_class','panel')
     skip_classes = kwargs.get('skip_classes',[])
     rotated = kwargs.get('rotated',False)
+    prefix = kwargs.get('prefix','')
 
     total_count = len(orthos)
     for idx, (op,gjson,sp) in enumerate(zip(orthos,geojsons,save_paths)):
@@ -75,7 +76,8 @@ def run_geojson_conversion(**kwargs):
             class_mapping,
             default_class,
             skip_classes,
-            rotated
+            rotated,
+            prefix
         )
 
 def convert_geojson_cli():
@@ -91,6 +93,7 @@ def convert_geojson_cli():
     parser.add_argument('--skip-classes',type=int,nargs='+',help="Classes to skip, specify multiple")
     parser.add_argument('--rotated',action='store_true',default=False,help="Use rotated bounding box, defaults to false")
     parser.add_argument('--batch',action='store_true',default=False,help="Process a batch of orthos")
+    parser.add_argument('--prefix',default='',help="The prefix to use when saving the annotation")
 
     args = vars(parser.parse_args())
 
