@@ -63,9 +63,12 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
             writer.addObject(name, xmin, ymin, xmax, ymax)
 
     if "s3://" in save_path:
-        writer.save("annot.xml")
-        upload_file("annot.xml", save_path, exist_ok=False)
-        os.remove("annot.xml")
+        anno_path = os.path.basename(save_path)
+        if anno_path[:-4] != '.xml':
+            anno_path += '.xml'
+        writer.save(anno_path)
+        upload_file(anno_path, save_path, exist_ok=False)
+        os.remove(anno_path)
     else:
         writer.save(save_path)
 
