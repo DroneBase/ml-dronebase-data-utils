@@ -97,8 +97,11 @@ def visualize(**kwargs):
                     class_name = a.getElementsByTagName('name')[0].firstChild.data
                     classes.append(class_name)
 
-            #img_drawn = draw_ (img,boxes,classes)
-            img_drawn = draw_rotated_boxes(img,boxes,classes=classes,box_mode='XYXYA_ABS')
+            if len(boxes):
+                #img_drawn = draw_ (img,boxes,classes)
+                img_drawn = draw_rotated_boxes(img,boxes,classes=classes,box_mode='XYXYA_ABS')
+            else:
+                img_drawn = img
 
             upload = False
             if "s3://" in sp:

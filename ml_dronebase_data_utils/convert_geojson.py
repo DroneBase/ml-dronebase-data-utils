@@ -32,18 +32,23 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
 
     writer = PascalVOCWriter(ortho_path, ortho.width, ortho.height,prefix=prefix)
 
-    vertices = get_pixel_vertices(ortho, gdf)
-    if rotated:
-        boxes = vertices_to_rotated_boxes(vertices)
-    else:
-        boxes = vertices_to_boxes(vertices)
+    boxes = []
+    names = []
+    if not gdf.empty:
+        vertices = get_pixel_vertices(ortho, gdf)
+        if rotated:
+            boxes = vertices_to_rotated_boxes(vertices)
+        else:
+            boxes = vertices_to_boxes(vertices)
 
-    if class_attribute is not None:
-        names = gdf[class_attribute]
-    else:
-        names = [default_class]*len(boxes)
-
+        if class_attribute is not None:
+            names = gdf[class_attribute]
+        else:
+            names = [default_class]*len(boxes)
     for box, name in zip(boxes, names):
+        # Skip boxes with None or empty/no information, assumption is that they don't have any information
+        if name is None or (isinstance(name,str) and len(name) == 0):
+            continue
         # Dumb Logic
         try:
             # int(name) might be too restrictive in some scenarios, adapt if required
