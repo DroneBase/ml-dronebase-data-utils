@@ -15,7 +15,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 if __name__ == "__main__":
     setup(
         name="ml-dronebase-data-utils",
-        version="0.0.4",
+        version="0.0.6",
         description="A collection of commonly functions used by DroneBase ML Engineers",
         long_description=long_description,
         long_description_content_type="text/markdown",
@@ -40,6 +40,10 @@ if __name__ == "__main__":
             "boto3>=1.19.2",
             "tqdm>=4.62.3",
             "scikit-learn==1.0.2",
+            "Shapely==1.8.1.post1",
+            "rasterio==1.2.10",
+            "geopandas==0.9.0",
+            "Pillow==9.0.0",
             "jinja2>=2.0.1",
             "black>=21.4b2",
             "isort>=5.10.1",

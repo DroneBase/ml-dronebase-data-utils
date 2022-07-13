@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pathlib
 import warnings
@@ -204,16 +205,20 @@ def download_dir(
         bucket.download_file(obj.key, target)
 
 
-def sync_dir(from_dir: str, to_dir: str) -> None:
+def sync_dir(from_dir: str, to_dir: str, exist_ok: Optional[bool] = True) -> None:
     """Download the contents of a directory in parallel using aws s3 sync.
 
     Args:
         from_dir (str): S3 url or local path that is the master dir.
         to_dir (str): S3 url or local path that will be synced to from_dir (master dir).
+        exist_ok (Optional[bool], optional): whether to override existing to_dir. Defaults to True.
     """
     if "s3://" not in to_dir:
-        os.makedirs(to_dir)
+        os.makedirs(to_dir, exist_ok=exist_ok)
+    logging.debug(f"Sync from URL: {from_dir}")
+    logging.debug(f"Sync to dir: {to_dir}")
     os.system("aws s3 sync {} {}".format(from_dir, to_dir))
+    logging.debug("Just ran the system command...")
 
 
 def split_dataset(
