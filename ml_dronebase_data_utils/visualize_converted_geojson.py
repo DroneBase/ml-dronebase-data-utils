@@ -6,6 +6,7 @@ import os
 import tempfile
 import argparse
 from pathlib import Path
+import subprocess
 
 def visualize(**kwargs):
     '''
@@ -73,8 +74,14 @@ def visualize(**kwargs):
                 path = os.path.join(tmpdir,os.path.basename(ap))
                 download_file(ap,path)
                 ap = path
-            
-            img = Image.open(op)
+           
+            # Ideally find size height and width and use that limit for reading in PIL, see https://github.com/python-pillow/Pillow/issues/515
+            # But currently skip if we encounter error
+            try:
+                img = Image.open(op)
+            except Image.DecompressionBombError:
+                print(f"Skipping {op} as it exceeds {Image.MAX_IMAGE_PIXELS} pixels")
+                continue
 
             parser = minidom.parse(ap)
 
