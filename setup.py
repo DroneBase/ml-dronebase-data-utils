@@ -52,9 +52,9 @@ if __name__ == "__main__":
             "pytest",
         ],
         entry_points={
-            'console_scripts':[
-                'convert_geojson = ml_dronebase_data_utils.convert_geojson_cli:convert_geojson_cli',
-                'visualize_converted_geojson = ml_dronebase_data_utils.visualize_converted_geojson:visualize_converted_geojson'
+            "console_scripts": [
+                "convert_geojson = ml_dronebase_data_utils.convert_geojson_cli:convert_geojson_cli",
+                "visualize_converted_geojson = ml_dronebase_data_utils.visualize_converted_geojson:visualize_converted_geojson",
             ]
-        }
+        },
     )

@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List, Optional
 
 import geopandas as gpd
 import numpy as np
@@ -6,15 +7,24 @@ import rasterio
 from geopandas import GeoDataFrame
 from rasterio.io import DatasetReader
 from tqdm import tqdm
-from typing import Optional, List, Dict
 
 from .box_utils import vertices_to_boxes, vertices_to_rotated_boxes
 from .pascal_voc import PascalVOCWriter
 from .s3 import upload_file
 
 
-def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: Optional[str] = None, class_mapping: Optional[Dict[int,str]] = None,default_class:str = 'panel',skip_classes: List[int] =[], rotated: bool = False, prefix:str = ''):
-    '''
+def geo_to_voc(
+    ortho_path: str,
+    geo_path: str,
+    save_path: str,
+    class_attribute: Optional[str] = None,
+    class_mapping: Optional[Dict[int, str]] = None,
+    default_class: str = "panel",
+    skip_classes: List[int] = [],
+    rotated: bool = False,
+    prefix: str = "",
+):
+    """
     Convert data on geojson format to pascal voc data.
 
     :param ortho_path: Path to the ortho. Can be a local/s3 location
@@ -26,11 +36,11 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
     :param skip_classes: The classes to be skipped while the conversion. This should be values from the class_attribute field in the geojson.
     :param rotated: Specify if to use rotated bounding boxes, defaults to false.
     :param prefix: Specify a prefix to use for path while writing the xml file. Useful for local conversion for final path is s3.
-    '''
+    """
     ortho = rasterio.open(ortho_path)
     gdf = gpd.read_file(geo_path)
 
-    writer = PascalVOCWriter(ortho_path, ortho.width, ortho.height,prefix=prefix)
+    writer = PascalVOCWriter(ortho_path, ortho.width, ortho.height, prefix=prefix)
 
     boxes = []
     names = []
@@ -44,10 +54,10 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
         if class_attribute is not None:
             names = gdf[class_attribute]
         else:
-            names = [default_class]*len(boxes)
+            names = [default_class] * len(boxes)
     for box, name in zip(boxes, names):
         # Skip boxes with None or empty/no information, assumption is that they don't have any information
-        if name is None or (isinstance(name,str) and len(name) == 0):
+        if name is None or (isinstance(name, str) and len(name) == 0):
             continue
         # Dumb Logic
         try:
@@ -59,7 +69,7 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
             continue
         if class_mapping is not None:
             # If mapping is found, use the default name instead of default.
-            name = class_mapping.get(name,name)
+            name = class_mapping.get(name, name)
         if rotated:
             xmin, ymin, xmax, ymax, angle = box
             writer.addObject(name, xmin, ymin, xmax, ymax, angle)
@@ -69,8 +79,8 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
 
     if "s3://" in save_path:
         anno_path = os.path.basename(save_path)
-        if anno_path[:-4] != '.xml':
-            anno_path += '.xml'
+        if anno_path[:-4] != ".xml":
+            anno_path += ".xml"
         writer.save(anno_path)
         upload_file(anno_path, save_path, exist_ok=False)
         os.remove(anno_path)
@@ -78,9 +88,28 @@ def geo_to_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: 
         writer.save(save_path)
 
 
-def geo_to_rotated_voc(ortho_path: str, geo_path: str, save_path: str, class_attribute: Optional[str] = None, class_mapping: Optional[Dict[int,str]] = None,default_class:str = 'panel',skip_classes: List[int] =[],prefix:str = ''):
+def geo_to_rotated_voc(
+    ortho_path: str,
+    geo_path: str,
+    save_path: str,
+    class_attribute: Optional[str] = None,
+    class_mapping: Optional[Dict[int, str]] = None,
+    default_class: str = "panel",
+    skip_classes: List[int] = [],
+    prefix: str = "",
+):
     # Migrated rotated logic to geo_to_voc and only keeping it for compatibility
-    geo_to_voc(ortho_path,geo_path,save_path,class_attribute,class_mapping,default_class,skip_classes,rotated=True,prefix=prefix)
+    geo_to_voc(
+        ortho_path,
+        geo_path,
+        save_path,
+        class_attribute,
+        class_mapping,
+        default_class,
+        skip_classes,
+        rotated=True,
+        prefix=prefix,
+    )
 
 
 def get_pixel_vertices(ortho: DatasetReader, gdf: GeoDataFrame) -> np.ndarray:

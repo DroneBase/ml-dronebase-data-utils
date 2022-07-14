@@ -198,6 +198,7 @@ def boxes_to_vertices(boxes: Union[np.ndarray, List[List[float]]]) -> np.ndarray
         vertices.append(v)
     return np.asarray(vertices)
 
+
 """
 Convert rotated boxes to vertices
 
@@ -207,8 +208,12 @@ Convert rotated boxes to vertices
 
 :return: Returns the vertices. if classes is provided returns both vertices and classes
 """
+
+
 def rotated_boxes_to_vertices(
-    boxes: Union[np.ndarray, List[List[float]]], box_mode: str = "XYWHA_ABS", classes: List[str] = []
+    boxes: Union[np.ndarray, List[List[float]]],
+    box_mode: str = "XYWHA_ABS",
+    classes: List[str] = [],
 ) -> np.ndarray:
     num_instances = len(boxes)
 

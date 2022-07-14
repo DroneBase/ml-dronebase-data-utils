@@ -40,4 +40,4 @@ def test_sync():
     assert len(data_files) > 0
 
     # Remove synced dir locally
-    shutil.rmtree('solar-panel-dataset-v2')
+    shutil.rmtree("solar-panel-dataset-v2")
