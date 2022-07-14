@@ -1,10 +1,10 @@
 from ml_dronebase_data_utils.convert_geojson import geo_to_voc
 
 def test_conversion():
-    ortho_path = "s3://ml-solar-ortho-fault-detection/orthos/tiff/PA140004_Thermal.tif"
-    geojson_path = "s3://ml-solar-ortho-fault-detection/orthos/geojson/PA140004_Thermal.geojson"
-    save_path = "s3://ml-solar-ortho-fault-detection/orthos/annotations/PA140004_Thermal.xml"
-    class_attribute = "id"
+    ortho_path = "s3://ml-solar-ortho-fault-detection/code-test-sample/CA060026_20220317_IR_Visual.tif"
+    geojson_path = "s3://ml-solar-ortho-fault-detection/code-test-sample/CA060026_20220317.geojson"
+    save_path = "s3://ml-solar-ortho-fault-detection/code-test-sample/CA060026_20220317.xml"
+    class_attribute = "Defect Type ID"
     class_mapping = {
         0: 'Normal',
         1: 'Diode',
