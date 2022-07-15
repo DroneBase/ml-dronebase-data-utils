@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import geopandas as gpd
@@ -79,8 +80,7 @@ def geo_to_voc(
 
     if "s3://" in save_path:
         anno_path = os.path.basename(save_path)
-        if anno_path[:-4] != ".xml":
-            anno_path += ".xml"
+        anno_path = str(Path(anno_path).with_suffix(".xml"))
         writer.save(anno_path)
         upload_file(anno_path, save_path, exist_ok=False)
         os.remove(anno_path)
