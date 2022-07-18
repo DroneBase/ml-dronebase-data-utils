@@ -45,10 +45,16 @@ if __name__ == "__main__":
             "geopandas==0.9.0",
             "Pillow==9.0.0",
             "jinja2>=2.0.1",
-            "black>=21.4b2",
+            "black>=21.11b1",
             "isort>=5.10.1",
             "colorama",
             "flake8==4.0.1",
             "pytest",
         ],
+        entry_points={
+            "console_scripts": [
+                "convert_geojson = ml_dronebase_data_utils.convert_geojson_cli:convert_geojson_cli",
+                "visualize_converted_geojson = ml_dronebase_data_utils.visualize_converted_geojson:visualize_converted_geojson",
+            ]
+        },
     )

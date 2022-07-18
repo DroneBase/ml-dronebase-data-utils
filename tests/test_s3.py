@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 from ml_dronebase_data_utils.s3 import list_prefix, sync_dir
 
@@ -31,9 +32,12 @@ def test_list_prefix_prefixes():
 
 def test_sync():
     data_url = (
-        "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train_only_annots/"
+        "s3://ml-detectron-test-dataset/data/solar-panel-dataset/train/annotations/"
     )
     data_dir = "solar-panel-dataset-v2/train/annotations/"
     sync_dir(from_dir=data_url, to_dir=data_dir)
     data_files = glob.glob(os.path.join(data_dir, "*"))
     assert len(data_files) > 0
+
+    # Remove synced dir locally
+    shutil.rmtree("solar-panel-dataset-v2")

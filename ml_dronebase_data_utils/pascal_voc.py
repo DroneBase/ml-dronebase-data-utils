@@ -15,6 +15,7 @@ class PascalVOCWriter:
         depth: int = 3,
         database: str = "Unknown",
         segmented: int = 0,
+        prefix: str = "",
     ) -> None:
         environment = Environment(
             loader=PackageLoader("ml_dronebase_data_utils", "templates"),
@@ -26,6 +27,8 @@ class PascalVOCWriter:
             file_path = path
         else:
             file_path = abspath
+        if len(prefix) > 0:
+            file_path = os.path.join(prefix, os.path.basename(file_path))
         self.template_parameters = {
             "path": file_path,
             "filename": os.path.basename(abspath),

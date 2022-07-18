@@ -200,8 +200,19 @@ def boxes_to_vertices(boxes: Union[np.ndarray, List[List[float]]]) -> np.ndarray
 
 
 def rotated_boxes_to_vertices(
-    boxes: Union[np.ndarray, List[List[float]]], box_mode: str = "XYWHA_ABS"
+    boxes: Union[np.ndarray, List[List[float]]],
+    box_mode: str = "XYWHA_ABS",
+    classes: List[str] = [],
 ) -> np.ndarray:
+    """
+    Convert rotated boxes to vertices
+
+    :param boxes: The boxes to convert
+    :param box_mode: The format used for the box, either 'XYWHA_ABS' or 'XYXYA_ABS'
+    :param classes: The classes for each box. Need to sort this as well.
+
+    :return: Returns the vertices. if classes is provided returns both vertices and classes
+    """
     num_instances = len(boxes)
 
     if not isinstance(boxes, np.ndarray):
@@ -213,12 +224,20 @@ def rotated_boxes_to_vertices(
     sorted_idxs = np.argsort(-areas).tolist()
     # Re-order overlapped instances in descending order.
     boxes = boxes[sorted_idxs]
+    # Re-order classes as well
+    if len(classes) and not isinstance(classes, np.ndarray):
+        classes = np.asarray(classes)
+        classes = classes[sorted_idxs]
+        classes = classes.tolist()
 
     vertices = []
     for i in range(num_instances):
         v = extract_rotated_vertices(boxes[i], box_mode)
         vertices.append(v)
-    return np.asarray(vertices)
+    if len(classes):
+        return np.asarray(vertices), classes
+    else:
+        return np.asarray(vertices)
 
 
 def extract_vertices(box: np.ndarray) -> List[List[float]]:
